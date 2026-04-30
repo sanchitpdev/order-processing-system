@@ -3,10 +3,10 @@ server:
 
 spring:
   application:
-    name: orders-service
+    name: order-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5434/orders_db
+    url: jdbc:postgresql://orders-db:5432/orders_db
     username: orders_user
     password: 1234
     driver-class-name: org.postgresql.Driver
@@ -17,7 +17,7 @@ spring:
     show-sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

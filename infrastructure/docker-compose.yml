@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   zookeeper:
@@ -62,6 +60,50 @@ services:
       - "5436:5432"
     volumes:
       - notifications_data:/var/lib/postgresql/data
+
+  orders-service:
+    build:
+      context: ../order-service
+      dockerfile: Dockerfile
+    container_name: orders-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - kafka
+      - orders-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://orders-db:5432/orders_db
+      SPRING_DATASOURCE_USERNAME: orders_user
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+  payment-service:
+    build:
+      context: ../payment-service
+      dockerfile: Dockerfile
+    container_name: payment-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - kafka
+      - payments-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://payments-db:5432/payments_db
+      SPRING_DATASOURCE_USERNAME: payments_user
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+  notification-service:
+    build:
+      context: ../notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - kafka
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
 
   prometheus:
     image: prom/prometheus:latest
